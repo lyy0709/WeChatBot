@@ -51,7 +51,7 @@ def load_login(core):
 
 
 def login(self, loginCallback=None, exitCallback=None):
-    webhook_url = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=3d35cb0a-8caa-4923-abbb-18f46a19ebce"  # 替换为你自己的微信机器人Webhook URL
+    webhook_url = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=3d35cb0a-8caa-4923-abbb-18f46a19ebce"  # 替换为你自己的微信机器人
 
     if self.alive or self.isLogging:
         log.warning('itchat has already logged in.')
