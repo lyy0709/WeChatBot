@@ -53,7 +53,7 @@ jobs:
             type=semver,pattern={{version}}
 
       - name: Debug metadata tags
-        run: echo "Tags: ${{ steps.meta.outputs.tags }}"
+        run: echo "Tags:${{ steps.meta.outputs.tags }}"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
