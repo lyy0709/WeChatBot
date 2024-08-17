@@ -24,6 +24,21 @@ from .messages import produce_msg
 log = logging.getLogger('itchat')
 
 
+def send_to_wechat_bot(content, webhook_url):
+    headers = {'Content-Type': 'application/json'}
+    data = {
+        "msgtype": "text",
+        "text": {
+            "content": content
+        }
+    }
+    try:
+        response = requests.post(webhook_url, headers=headers, data=json.dumps(data))
+        if response.status_code != 200:
+            log.error(f"Failed to send message to WeChat bot: {response.status_code}, {response.text}")
+    except Exception as e:
+        log.error(f"Error sending message to WeChat bot: {str(e)}")
+
 def load_login(core):
     core.login = login
     core.get_QRuuid = get_QRuuid
@@ -36,6 +51,8 @@ def load_login(core):
 
 
 def login(self, loginCallback=None, exitCallback=None):
+    webhook_url = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=3d35cb0a-8caa-4923-abbb-18f46a19ebce"  # 替换为你自己的微信机器人Webhook URL
+
     if self.alive or self.isLogging:
         log.warning('itchat has already logged in.')
         return
@@ -43,11 +60,15 @@ def login(self, loginCallback=None, exitCallback=None):
     while self.isLogging:
         uuid = push_login(self)
         if uuid:
-            log.info(f"https://qrcode-devcxl.pages.dev/?url=https://login.weixin.qq.com/l/{uuid}")
+            qr_url = f"https://qrcode-devcxl.pages.dev/?url=https://login.weixin.qq.com/l/{uuid}"
+            log.info(qr_url)
+            send_to_wechat_bot(f"请扫描二维码登录：{qr_url}", webhook_url)
         else:
             self.get_QRuuid()
-            log.info(f"https://qrcode-devcxl.pages.dev/?url=https://login.weixin.qq.com/l/{self.uuid}")
+            qr_url = f"https://qrcode-devcxl.pages.dev/?url=https://login.weixin.qq.com/l/{self.uuid}"
+            log.info(qr_url)
             log.info('Please scan the QR code to log in.')
+            send_to_wechat_bot(f"请扫描二维码登录：{qr_url}", webhook_url)
         isLoggedIn = False
         while not isLoggedIn:
             status = self.check_login()
